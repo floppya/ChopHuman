@@ -38,7 +38,7 @@ class ChopHumanDelegate(object):
     def _onEnableAction(self):
         self.window.delegate = self
 
-    def onLimbSelected(self, current, previous):
+    def onBoneSelected(self, current, previous):
         pass
 
     def onSceneMousePressEvent(self, event):
@@ -56,20 +56,20 @@ class ChopHumanDelegate(object):
 
 class DefaultDelegate(ChopHumanDelegate):
     """
-    This is the delegate which is used by default. Allows highlighting of limbs.
+    This is the delegate which is used by default. Allows highlighting of Bones.
     """
     delegateName = 'View'
     hotKey = 'a'
 
-    def onLimbSelected(self, current, previous):
+    def onBoneSelected(self, current, previous):
         self.updateUI()
 
     def updateUI(self):
-        limbItem = self.window.selectedLimbItem
-        if limbItem:
-            self.window.highlightLimb(limbItem)
+        item  = self.window.selectedBoneItem
+        if item:
+            self.window.highlightBone(item)
         else:
-            self.window.unhighlightLimb()
+            self.window.unhighlightBone()
 
 
 class PlaceBonesDelegate(ChopHumanDelegate):
@@ -80,20 +80,20 @@ class PlaceBonesDelegate(ChopHumanDelegate):
     hotKey = 's'
 
     def enable(self):
-        if self.window.selectedLimbItem:
-            self.window.selectedLimbItem.editBone(True)
+        if self.window.selectedBoneItem:
+            self.onBoneSelected(self.window.selectedBoneItem, None)
         self.window.pushCursor(QtCore.Qt.OpenHandCursor)
 
     def disable(self):
-        if self.window.selectedLimbItem:
-            self.window.selectedLimbItem.editBone(False)
+        if self.window.selectedBoneItem:
+            self.onBoneSelected(None, self.window.selectedBoneItem)
         self.window.popCursor()
 
-    def onLimbSelected(self, current, previous):
+    def onBoneSelected(self, current, previous):
         if previous:
-            previous.editBone(False)
+            previous.isEditable = False
         if current:
-            current.editBone(True)
+            current.isEditable = True
         self.updateUI()
 
     def updateUI(self):
@@ -106,10 +106,10 @@ class PlaceBonesDelegate(ChopHumanDelegate):
         else:
             self.window.skeletonTreeWidget.clearSelection()
         # update limb visibility
-        if self.window.selectedLimbItem:
-            self.window.highlightLimb(self.window.selectedLimbItem)
+        if self.window.selectedBoneItem:
+            self.window.highlightBone(self.window.selectedBoneItem)
         else:
-            self.window.unhighlightLimb()
+            self.window.unhighlightBone()
 
 
 class TrimSkinsDelegate(ChopHumanDelegate):
@@ -124,20 +124,20 @@ class TrimSkinsDelegate(ChopHumanDelegate):
     hotKey = 'd'
 
     def enable(self):
-        if self.window.selectedLimbItem:
-            self.window.selectedLimbItem.editSkin(True)
+        if self.window.selectedBoneItem:
+            self.onBoneSelected(self.window.selectedBoneItem, None)
         self.window.pushCursor(QtCore.Qt.CrossCursor)
 
     def disable(self):
-        if self.window.selectedLimbItem:
-            self.window.selectedLimbItem.editSkin(False)
+        if self.window.selectedBoneItem:
+            self.onBoneSelected(None, self.window.selectedBoneItem)
         self.window.popCursor()
 
-    def onLimbSelected(self, current, previous):
+    def onBoneSelected(self, current, previous):
         if previous:
-            previous.editSkin(False)
+            previous.isEditing = False
         if current:
-            current.editSkin(True)
+            current.isEditing = True
         self.updateUI()
 
     def updateUI(self):
@@ -150,27 +150,33 @@ class TrimSkinsDelegate(ChopHumanDelegate):
         else:
             self.window.skeletonTreeWidget.clearSelection()
         # update limb visibility
-        if self.window.selectedLimbItem:
-            self.window.highlightLimb(self.window.selectedLimbItem)
+        if self.window.selectedBoneItem:
+            self.window.highlightBone(self.window.selectedBoneItem)
         else:
-            self.window.unhighlightLimb()
+            self.window.unhighlightBone()
 
     def onSceneMousePressEvent(self, event):
-        selectedLimbItem = self.window.selectedLimbItem
-        if selectedLimbItem and selectedLimbItem.skinItem:
-            targetPos = event.scenePos() - selectedLimbItem.scenePos()
-            self.isDragging = True
-            self.isMasking = event.button() == QtCore.Qt.LeftButton
-            selectedLimbItem.skinItem.addToMask(targetPos, 10, 10, unmask=not self.isMasking)
-            self.window.scene.update()
+        selectedBoneItem = self.window.selectedBoneItem
+        if selectedBoneItem:
+            skinItem = self.window.skinItemMap.get(selectedBoneItem.bone.name, None)
+            if skinItem:
+                targetPos = skinItem.mapFromScene(event.scenePos())
+                self.isDragging = True
+                self.isMasking = event.button() == QtCore.Qt.LeftButton
+                skinItem.addToMask(targetPos, 10, 10, unmask=not self.isMasking)
+                self.window.scene.update()
         else:
             event.ignore()
 
     def onSceneMouseMoveEvent(self, event):
         if self.isDragging:
-            selectedLimbItem = self.window.selectedLimbItem
-            targetPos = event.scenePos() - selectedLimbItem.scenePos()
-            selectedLimbItem.skinItem.addToMask(targetPos, 10, 10, unmask=not self.isMasking)
+            selectedBoneItem = self.window.selectedBoneItem
+            if selectedBoneItem:
+                skinItem = self.window.skinItemMap.get(selectedBoneItem.bone.name, None)
+                if skinItem:
+                    targetPos = skinItem.mapFromScene(event.scenePos())
+                    #targetPos = event.scenePos() - selectedBoneItem.scenePos()
+                    skinItem.addToMask(targetPos, 10, 10, unmask=not self.isMasking)
             self.window.scene.update()
 
     def onSceneMouseReleaseEvent(self, event):
@@ -186,24 +192,28 @@ class PoseDelegate(ChopHumanDelegate):
     hotKey = 'f'
 
     def enable(self):
-        if self.window.selectedLimbItem:
-            self.window.selectedLimbItem.pose(True)
+        if self.window.selectedBoneItem:
+            self.onBoneSelected(self.window.selectedBoneItem, None)
         self.window.pushCursor(QtCore.Qt.OpenHandCursor)
 
     def disable(self):
-        if self.window.selectedLimbItem:
-            self.window.selectedLimbItem.pose(False)
-        # reset the skeleton to rest pose
-        for _, limbItem in self.window._limbItemMap.items():
-            limbItem.setRotation(0)
+        if self.window.selectedBoneItem:
+            self.onBoneSelected(None, self.window.selectedBoneItem)
         self.window.popCursor()
 
-    def onLimbSelected(self, current, previous):
+    def onBoneSelected(self, current, previous):
         if previous:
-            previous.pose(False)
+            previous.isPosing = False
         if current:
-            current.pose(True)
+            current.isPosing = True
         self.updateUI()
+
+    def onBoneTransformChanged(self):
+        boneItem = self.window.selectedBoneItem
+        flatBone = self.window.flatEntityState.boneByName(boneItem.boneName)
+        pos = boneItem
+        if flatBone.parent != -1:
+            flatParentBone = self.window.flatEntityState.bones[flatBone.parent]
 
     def updateUI(self):
         skeletonItem = self.window.selectedSkeletonItem
@@ -214,9 +224,8 @@ class PoseDelegate(ChopHumanDelegate):
             skeletonItem.setSelected(True)
         else:
             self.window.skeletonTreeWidget.clearSelection()
-        # update limb visibility
-        if self.window.selectedLimbItem:
-            self.window.highlightLimb(self.window.selectedLimbItem)
+        # update bone visibility
+        if self.window.selectedBoneItem:
+            self.window.highlightBone(self.window.selectedBoneItem)
         else:
-            self.window.unhighlightLimb()
-    
+            self.window.unhighlightBone()

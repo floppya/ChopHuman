@@ -7,7 +7,7 @@ class ChopHumanExporter(object):
     fileType = ('Base Exporter', '*')
     version = '0.0'
 
-    def export(self, rootItem, filename):
+    def export(self, animationSet, skinItemMap, filename):
         pass
 
     @classmethod

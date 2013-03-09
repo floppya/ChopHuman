@@ -1,5 +1,6 @@
 import math
 from PyQt4 import QtCore, QtGui
+from chophumanfinisher.models.skeleton import Bone, Skin
 
 
 class LimbGraphicsItem(QtGui.QGraphicsItem):
@@ -197,31 +198,44 @@ class MaskedSkinItem(QtGui.QGraphicsPixmapItem):
         return clippedPix, offset
 
 
-class BoneGraphicsItem(QtGui.QGraphicsItemGroup):
+class BoneGraphicsItem(QtGui.QGraphicsObject):
     """
     Here lies a hackfest of a QGraphicsItemGroup that graphically represents a bone.
     You can drag the pivot around and rotate/scale the tail. 
     """
+    bone = None
     originPivotItem = None
     directionItem = None
     isDragging = False
     isRotating = False
     isEditable = False
-    isPosing = False
+    _isPosing = False
     pivotRadius = 20
 
-    def __init__(self, parent=None):
+    boneChanged = QtCore.pyqtSignal()
+
+    def __init__(self, bone=None, parent=None):
         super(BoneGraphicsItem, self).__init__(parent)
+        self.bone = bone
         self.setFlag(self.ItemIsMovable, True)
         pivotRadius = self.pivotRadius
         pivotRect = QtCore.QRectF(0, 0, pivotRadius, pivotRadius)
         self.originPivotItem = QtGui.QGraphicsEllipseItem(pivotRect)
         self.originPivotItem.translate(-0.5 * pivotRadius, -0.5 * pivotRadius)
-        self.addToGroup(self.originPivotItem)
+        self.originPivotItem.setParentItem(self)
 
         self.directionItem = QtGui.QGraphicsRectItem()
         self.updateDirectionSize(50, pivotRadius * 0.5)
-        self.addToGroup(self.directionItem)           
+        self.directionItem.setParentItem(self)
+
+    @property
+    def isPosing(self):
+        return self._isPosing
+    
+    @isPosing.setter
+    def isPosing(self, val):
+        self.isEditable = self._isPosing = val
+        return val
 
     def updateDirectionSize(self, width, height):
         rect = QtCore.QRectF(0.0, -height * 0.5, width, height)
@@ -251,6 +265,7 @@ class BoneGraphicsItem(QtGui.QGraphicsItemGroup):
     def mouseMoveEvent(self, event):
         if self.isDragging:
             super(BoneGraphicsItem, self).mouseMoveEvent(event)
+            self.boneChanged.emit()
         elif self.isRotating:
             targetPos = self.mapFromScene(event.scenePos())
             targetDistance = math.sqrt(targetPos.x() ** 2 + targetPos.y() ** 2)
@@ -259,12 +274,9 @@ class BoneGraphicsItem(QtGui.QGraphicsItemGroup):
             if targetDistance != 0:
                 angle = math.atan2(targetPos.y(), targetPos.x())
                 angle = angle * 180 / math.pi
-                if self.isPosing:
-                    dAngle = angle + self.parentItem().rotation()
-                    self.parentItem().setTransformOriginPoint(self.pos())
-                    self.parentItem().setRotation(dAngle)
-                else:
-                    self.setRotation(angle + self.rotation())
+                self.setRotation(angle + self.rotation())
+                #self.bone.transform.angle += angle
+            self.boneChanged.emit()
 
     def show(self, opacity=1):
         self.setVisible(True)
@@ -275,3 +287,17 @@ class BoneGraphicsItem(QtGui.QGraphicsItemGroup):
             self.setVisible(False)
         else:
             self.setOpacity(opacity)
+
+    def boundingRect(self):
+        return self.directionItem.boundingRect().united(self.originPivotItem.boundingRect())
+    
+    def paint(self, *args, **kwargs):
+        pass
+
+    def updateFromBone(self):
+        """Update the item transform from the bone"""
+        pass
+    
+    def updateBone(self):
+        """Update the bone from the item transform"""
+        pass
