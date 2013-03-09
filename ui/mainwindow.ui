@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>834</width>
-    <height>654</height>
+    <width>937</width>
+    <height>720</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -15,16 +15,7 @@
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
-    <property name="leftMargin">
-     <number>4</number>
-    </property>
-    <property name="topMargin">
-     <number>4</number>
-    </property>
-    <property name="rightMargin">
-     <number>9</number>
-    </property>
-    <property name="bottomMargin">
+    <property name="margin">
      <number>0</number>
     </property>
     <item row="0" column="0">
@@ -58,7 +49,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>834</width>
+     <width>937</width>
      <height>21</height>
     </rect>
    </property>
@@ -79,7 +70,7 @@
     <enum>Qt::ToolButtonIconOnly</enum>
    </property>
    <attribute name="toolBarArea">
-    <enum>TopToolBarArea</enum>
+    <enum>LeftToolBarArea</enum>
    </attribute>
    <attribute name="toolBarBreak">
     <bool>false</bool>
@@ -100,7 +91,7 @@
     <string>Skeleton</string>
    </property>
    <attribute name="dockWidgetArea">
-    <number>1</number>
+    <number>2</number>
    </attribute>
    <widget class="QWidget" name="dockWidgetContents_3">
     <layout class="QVBoxLayout" name="verticalLayout_4">
@@ -115,7 +106,7 @@
           <string>Freeze skins</string>
          </property>
          <property name="checked">
-          <bool>true</bool>
+          <bool>false</bool>
          </property>
         </widget>
        </item>
@@ -166,7 +157,7 @@
     <string>Animations</string>
    </property>
    <attribute name="dockWidgetArea">
-    <number>1</number>
+    <number>2</number>
    </attribute>
    <widget class="QWidget" name="dockWidgetContents">
     <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -183,6 +174,13 @@
          <property name="text">
           <string>New</string>
          </property>
+         <property name="icon">
+          <iconset>
+           <normaloff>./ui/animationNew.png</normaloff>./ui/animationNew.png</iconset>
+         </property>
+         <property name="toolTip">
+          <string>New animation</string>
+         </property>
         </widget>
        </item>
        <item>
@@ -190,12 +188,26 @@
          <property name="text">
           <string>Clone</string>
          </property>
+         <property name="toolTip">
+          <string>Clone animation</string>
+         </property>
+         <property name="icon">
+          <iconset>
+           <normaloff>./ui/animationClone.png</normaloff>./ui/animationClone.png</iconset>
+         </property>
         </widget>
        </item>
        <item>
         <widget class="QToolButton" name="butDeleteAnimation">
          <property name="text">
           <string>Delete</string>
+         </property>
+         <property name="toolTip">
+          <string>Delete animation</string>
+         </property>
+         <property name="icon">
+          <iconset>
+           <normaloff>./ui/animationDelete.png</normaloff>./ui/animationDelete.png</iconset>
          </property>
         </widget>
        </item>
@@ -266,6 +278,19 @@
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout">
        <item>
+        <spacer name="horizontalSpacer">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
         <widget class="QPushButton" name="butZeroPlayback">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
@@ -274,14 +299,34 @@
           </sizepolicy>
          </property>
          <property name="text">
-          <string>&lt;&lt;</string>
+          <string></string>
+         </property>
+         <property name="icon">
+          <iconset>
+           <normaloff>./ui/gotostart.png</normaloff>./ui/gotostart.png</iconset>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="butMoveToPrevKeyframe">
+         <property name="text">
+          <string></string>
+         </property>
+         <property name="icon">
+          <iconset>
+           <normaloff>./ui/prevkey.png</normaloff>./ui/prevkey.png</iconset>
          </property>
         </widget>
        </item>
        <item>
         <widget class="QPushButton" name="butTogglePlay">
          <property name="text">
-          <string>Play</string>
+          <string/>
+         </property>
+         <property name="icon">
+          <iconset>
+           <normaloff>ui/play.png</normaloff>
+           <normalon>ui/pause.png</normalon>ui/play.png</iconset>
          </property>
          <property name="checkable">
           <bool>true</bool>
@@ -289,9 +334,24 @@
         </widget>
        </item>
        <item>
+        <widget class="QPushButton" name="butMoveToNextKeyframe">
+         <property name="text">
+          <string></string>
+         </property>
+         <property name="icon">
+          <iconset>
+           <normaloff>./ui/nextkey.png</normaloff>./ui/nextkey.png</iconset>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="QPushButton" name="butEndOfPlayback">
          <property name="text">
-          <string>&gt;&gt;</string>
+          <string></string>
+         </property>
+         <property name="icon">
+          <iconset>
+           <normaloff>./ui/gotoend.png</normaloff>./ui/gotoend.png</iconset>
          </property>
         </widget>
        </item>
@@ -303,25 +363,35 @@
         </widget>
        </item>
        <item>
-        <spacer name="horizontalSpacer">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
+        <widget class="QLabel" name="labelCurrentFrame">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
          </property>
-         <property name="sizeType">
-          <enum>QSizePolicy::Preferred</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
+         <property name="minimumSize">
           <size>
-           <width>40</width>
-           <height>20</height>
+           <width>75</width>
+           <height>0</height>
           </size>
          </property>
-        </spacer>
-       </item>
-       <item>
-        <widget class="QLabel" name="labelCurrentFrame">
+         <property name="baseSize">
+          <size>
+           <width>0</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="font">
+          <font>
+           <pointsize>24</pointsize>
+          </font>
+         </property>
          <property name="text">
           <string>0</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
          </property>
         </widget>
        </item>
@@ -359,20 +429,6 @@
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="butMoveToPrevKeyframe">
-         <property name="text">
-          <string>&lt;&lt; Prev key</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="butMoveToNextKeyframe">
-         <property name="text">
-          <string>Next key &gt;&gt;</string>
-         </property>
-        </widget>
-       </item>
-       <item>
         <widget class="QPushButton" name="butAddKeyframe">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
@@ -383,12 +439,20 @@
          <property name="text">
           <string>Add key</string>
          </property>
+         <property name="icon">
+          <iconset>
+           <normaloff>./ui/keyAdd.png</normaloff>./ui/keyAdd.png</iconset>
+         </property>
         </widget>
        </item>
        <item>
         <widget class="QPushButton" name="butDeleteKeyframe">
          <property name="text">
           <string>Delete key</string>
+         </property>
+         <property name="icon">
+          <iconset>
+           <normaloff>./ui/keyDelete.png</normaloff>./ui/keyDelete.png</iconset>
          </property>
         </widget>
        </item>
@@ -426,6 +490,22 @@
    </property>
    <property name="toolTip">
     <string>Toggle play</string>
+   </property>
+  </action>
+  <action name="actionSelectNextBone">
+   <property name="text">
+    <string>Select next bone</string>
+   </property>
+   <property name="shortcut">
+    <string>C</string>
+   </property>
+  </action>
+  <action name="actionSelectPreviousBone">
+   <property name="text">
+    <string>Select previous bone</string>
+   </property>
+   <property name="shortcut">
+    <string>V</string>
    </property>
   </action>
  </widget>

@@ -253,10 +253,6 @@ class EntityState(object):
 
     def combineSelf(self, state0, shortest=False):
         self.combine(self, state0, shortest)
-#        for thisBone, state0Bone in zip(self.bones, state0.bones):
-#            thisBone.combine(state0Bone, state1Bone, shortest)
-#        for thisSkin, state0Skin in zip(self.skins, state0.skins):
-#            thisSkin.combine(state0Skin, state1Skin, shortest)
 
     def combine(self, state0, state1, shortest=False):
         for thisBone, state0Bone, state1Bone in zip(self.bones, state0.bones, state1.bones):

@@ -1,4 +1,6 @@
+from collections import defaultdict
 import math
+import os
 import elementtree.ElementTree as ET
 from chophumanfinisher.models.animation import AnimationSet, Animation, Keyframe, EntityState
 from chophumanfinisher.models.skeleton import Bone, Skin
@@ -13,15 +15,34 @@ class SCMLImporter(ChopHumanImporter):
     version = '0.00001'
     
     def importFile(self, inputFilepath):
+        inputDirectory, inputFilename = os.path.split(inputFilepath)
         tree = ET.parse(inputFilepath)
         root = tree.getroot()
         animationSets = []
-        # TODO: folders, files...
+        self.fileDataTable = defaultdict(dict)
+        self.skinFileMap = {}
+        for folderNode in root.findall('folder'):
+            folderId = int(folderNode.get('id'))
+            folderName = folderNode.get('name')
+            basePath = inputDirectory
+            for fileNode in folderNode.findall('file'):
+                fileId = int(fileNode.get('id'))
+                name = fileNode.get('name')
+                data = dict(
+                    id=fileId,
+                    folderId=folderId,
+                    name=name,
+                    filename=os.path.join(basePath, name),
+                    width=int(fileNode.get('width')),
+                    height=int(fileNode.get('height'))
+                )
+                self.fileDataTable[folderId][fileId] = data
+
         for entityNode in root.findall('entity'):
             animationSet = self._importEntity(entityNode)
             animationSets.append(animationSet)
 
-        return animationSets
+        return animationSets, self.skinFileMap
     
     def _importEntity(self, node):
         animationSet = AnimationSet()
@@ -85,9 +106,10 @@ class SCMLImporter(ChopHumanImporter):
                     skinNode = keyNode.find('object')
                     transform = skin.transform
                     skin.name = timelineName
-                    #TODO:
-                    #folder
-                    #file
+                    folderId = int(skinNode.get('folder'))
+                    fileId = int(skinNode.get('file'))
+                    fileData = self.fileDataTable[folderId][fileId]
+                    self.skinFileMap[skin.id] = fileData
                     skin.pivotX = float(skinNode.get('pivot_x', 0.0))
                     skin.pivotY = 1.0 - float(skinNode.get('pivot_y', 1.0))
                     skin.opacity = float(skinNode.get('opacity', 1.0))

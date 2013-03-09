@@ -4,6 +4,7 @@ from PyQt4 import QtCore, QtGui
 from chophumanfinisher.exporters.scml import SCMLExporter
 from chophumanfinisher.importers.scml import SCMLImporter
 from chophumanfinisher.models.animation import EntityState
+from chophumanfinisher.models.skeleton import normalizeAngle 
 from chophumanfinisher.ui.ui_mainwindow import Ui_ChopHumanMainWindow
 from .scenes import ChopHumanGraphicsScene
 from .widgets import BoneGraphicsItem, MaskedSkinItem, SkinGraphicsItem
@@ -25,13 +26,14 @@ class ChopHumanMainWindow(QtGui.QMainWindow, Ui_ChopHumanMainWindow):
         super(ChopHumanMainWindow, self).__init__(parent)
         self.setupUi(self)
 
+        self.animationSet = None
+        self.currentAnimation = None
         self.entityState = None
+        self.animationItemMap = {}
         self.boneItemMap = {}
         self.boneTreeItemMap = {}
         self.skinItemMap = {}
         self.skinTreeItemMap = {}
-        self.currentAnimation = None
-        self.animationItemMap = {}
 
         self.scene = ChopHumanGraphicsScene()
         self.scene.mainwindow = self
@@ -85,7 +87,7 @@ class ChopHumanMainWindow(QtGui.QMainWindow, Ui_ChopHumanMainWindow):
         self.entityStateChanged.connect(self.updateModelItems)
         @self.chkHighlightSelected.stateChanged.connect
         def onToggleHighlightSelected(state):
-            pass # TODO
+            pass # TODO: change the current view to reflect the new state
         @self.chkFreezeSkins.stateChanged.connect
         def onToggleFreezeSkin(val):
             if not self.chkFreezeSkins.isChecked():
@@ -97,6 +99,8 @@ class ChopHumanMainWindow(QtGui.QMainWindow, Ui_ChopHumanMainWindow):
             self.currentAnimation.looping = bool(self.chkLooping.isChecked())
         @self.butNewAnimation.clicked.connect
         def onNewAnimation():
+            if not self.animationSet:
+                return
             animation = self.animationSet.cloneAnimation()
             if not animation:
                 return
@@ -119,13 +123,15 @@ class ChopHumanMainWindow(QtGui.QMainWindow, Ui_ChopHumanMainWindow):
             self.animationListWidget.addItem(self._makeAnimationListItem(animation))
         @self.butDeleteAnimation.clicked.connect
         def onDeleteAnimation():
+            selectedItems = self.animationListWidget.selectedItems()
+            if not selectedItems:
+                return
             choice = QtGui.QMessageBox.question(
                 self, 'Delete Animation?', 'Do you really want to delete this animation?',
                 QtGui.QMessageBox.Yes | QtGui.QMessageBox.No, QtGui.QMessageBox.No
             )
             if choice != QtGui.QMessageBox.Yes:
                 return
-            selectedItems = self.animationListWidget.selectedItems()
             for item in selectedItems:
                 animation = self.animationItemMap[item]
                 self.animationSet.removeAnimation(animation)
@@ -139,6 +145,8 @@ class ChopHumanMainWindow(QtGui.QMainWindow, Ui_ChopHumanMainWindow):
         @self.butMoveToPrevKeyframe.clicked.connect
         def onMoveToPrevKeyframe():
             keyframe = self.currentKeyframe
+            if not keyframe:
+                return
             if keyframe.time == self.frameTime:
                 keyframe = self.currentAnimation.getPrevKeyframe(keyframe)
             if keyframe:
@@ -146,6 +154,8 @@ class ChopHumanMainWindow(QtGui.QMainWindow, Ui_ChopHumanMainWindow):
         @self.butMoveToNextKeyframe.clicked.connect
         def onMoveToNextKeyframe():
             keyframe = self.currentKeyframe
+            if not keyframe:
+                return
             if keyframe.time == self.frameTime:
                 keyframe = self.currentAnimation.getNextKeyframe(keyframe)
             if keyframe:
@@ -153,11 +163,14 @@ class ChopHumanMainWindow(QtGui.QMainWindow, Ui_ChopHumanMainWindow):
         @self.butDeleteKeyframe.clicked.connect
         def onDeleteKeyframe():
             keyframe = self.currentKeyframe
-            self.currentAnimation.removeKeyframe(keyframe)
-            self.updateAnimationState()
+            if keyframe:
+                self.currentAnimation.removeKeyframe(keyframe)
+                self.updateAnimationState()
     
     @property
     def currentKeyframe(self):
+        if not self.currentAnimation:
+            return None
         return self.currentAnimation.getKeyframeAt(self.frameTime)
 
     @property
@@ -178,12 +191,12 @@ class ChopHumanMainWindow(QtGui.QMainWindow, Ui_ChopHumanMainWindow):
         else:
             label = 'Play'
             self.playbackTimer.stop()
-        self.butTogglePlay.setText(label)
+        #self.butTogglePlay.setText(label)
     
     def _createDelegates(self):
         self._delegate = None
         DELEGATE_CLASSES = (
-            DefaultDelegate, PlaceBonesDelegate, TrimSkinsDelegate, PoseDelegate
+            DefaultDelegate, PlaceBonesDelegate, TrimSkinsDelegate
         )
         self.delegates = []
         self.delegateActionGroup = QtGui.QActionGroup(self)
@@ -250,10 +263,12 @@ class ChopHumanMainWindow(QtGui.QMainWindow, Ui_ChopHumanMainWindow):
             return        
         filename = unicode(filename)
         importer = importerClass()
-        animationSets = importer.importFile(filename)
+        animationSets, skinFileMap = importer.importFile(filename)
         # TODO: only clear the animation set if the imported animations are of different shapes.
         # TODO: otherwise, add them to the current animationSet
-        # set up the animation list box
+        
+        self.reset()
+        
         self.animationListWidget.clear()
         self.animationSet = animationSets[0] # HACK
         for animation in self.animationSet.animations:
@@ -286,6 +301,10 @@ class ChopHumanMainWindow(QtGui.QMainWindow, Ui_ChopHumanMainWindow):
 
         self.skeletonTreeWidget.expandAll()
         self.animationListWidget.setCurrentRow(0) # set up us the bones
+        # load up the images
+        filenames = [d['filename'] for d in skinFileMap.values()]
+        self.loadImages(filenames)
+        self.updateAnimationState()
     
     def _makeAnimationListItem(self, animation):
         listItem = QtGui.QListWidgetItem(animation.name)
@@ -316,7 +335,9 @@ class ChopHumanMainWindow(QtGui.QMainWindow, Ui_ChopHumanMainWindow):
         self.animationListWidget.clear()
         self.t = 0.0
         self.currentAnimation = None
+        self.entityState = None
         self.playbackTimer.stop()
+        
 
     def onReset(self):
         self.reset()
@@ -333,12 +354,20 @@ class ChopHumanMainWindow(QtGui.QMainWindow, Ui_ChopHumanMainWindow):
         self.delegate.onBoneSelected(self.selectedBoneItem, previousBoneItem)    
 
     def onLoadImages(self):
+        if not self.currentAnimation:
+            QtGui.QMessageBox.information(self, 'Sorry, this menu item should be lower.', 'You will need to load some animations first.')
+            return
         filenames, _ = QtGui.QFileDialog.getOpenFileNamesAndFilter(
             self, 'Choose images', 'c:/tmp/', 'Image files (*.png *.jpg *.jpeg *.gif *.tga)'
         )
         if not filenames:
             return
         self.pushCursor(QtCore.Qt.WaitCursor)
+        self.loadImages(filenames, positionFromImage=True)
+        self.copySkinTransforms()
+        self.popCursor()
+
+    def loadImages(self, filenames, positionFromImage=False):
         for filename in filenames:
             filename = unicode(filename)
             pixmap = QtGui.QPixmap()
@@ -366,6 +395,8 @@ class ChopHumanMainWindow(QtGui.QMainWindow, Ui_ChopHumanMainWindow):
                 skinItem.setZValue(skin.zIndex)
                 self.skinItemMap[bone.name] = skinItem
                 self.scene.addItem(skinItem)
+                positionFromImage = True
+            if positionFromImage:
                 offset = QtCore.QPointF(0.5 * fullWidth, fullHeight)
                 pos -= offset
                 skinItem.setPos(pos)
@@ -376,8 +407,6 @@ class ChopHumanMainWindow(QtGui.QMainWindow, Ui_ChopHumanMainWindow):
         # move bones to the front
         for item in self.boneItemMap.values():
             item.setZValue(1000.0)
-        self.copySkinTransforms()
-        self.popCursor()
             
     def highlightBone(self, boneItem, hiddenOpacity=0.05):
         for _, item in self.boneItemMap.items():
@@ -418,7 +447,7 @@ class ChopHumanMainWindow(QtGui.QMainWindow, Ui_ChopHumanMainWindow):
 
     def onAnimationChanged(self, current, previous):
         if not current:
-            pass
+            return
         animation = self.currentAnimation = self.animationItemMap[current]#self.animationSet.animationByName[unicode(current.text())]
         self.entityState = animation.cloneEntityState()
         self.flatEntityState = self.entityState.clone()
@@ -483,7 +512,7 @@ class ChopHumanMainWindow(QtGui.QMainWindow, Ui_ChopHumanMainWindow):
             parentBone = self.entityState.bones[bone.parent]
             parentBoneItem = self.boneItemMap[parentBone.name]
             pos = parentBoneItem.mapFromScene(pos)
-            rotation -= parentBoneItem.rotation()
+            rotation -= normalizeAngle(parentBoneItem.rotation())
         bone.transform.x = pos.x()
         bone.transform.y = pos.y()
         bone.transform.angle = rotation
@@ -496,6 +525,8 @@ class ChopHumanMainWindow(QtGui.QMainWindow, Ui_ChopHumanMainWindow):
         self.updateAnimationState()
     
     def _createKeyframeFromStateNow(self):
+        if not self.currentAnimation:
+            return
         frameTime = int(self.t * self.currentAnimation.length)
         keyframe = self.currentAnimation.getKeyframeAt(frameTime)
         # does a keyframe already exist for this frame?
@@ -512,6 +543,8 @@ class ChopHumanMainWindow(QtGui.QMainWindow, Ui_ChopHumanMainWindow):
         Update the relative locations
         """
         keyframe = self.currentKeyframe
+        if not keyframe:
+            return
         for skin in keyframe.entityState.skins:
             bone = keyframe.entityState.bones[skin.parent]
             boneItem = self.boneItemMap[bone.name]
@@ -542,6 +575,8 @@ class ChopHumanMainWindow(QtGui.QMainWindow, Ui_ChopHumanMainWindow):
         the original rest pose, followed by the new rest pose.
         """
         # TODO: if any of this fails, show a dialog that has some instructions
+        if not self.animationSet:
+            return
         restAnimation = self.animationSet.animationByName.get('rest', None)
         if not restAnimation:
             return
@@ -551,13 +586,15 @@ class ChopHumanMainWindow(QtGui.QMainWindow, Ui_ChopHumanMainWindow):
         originalEntityState = originalKeyframe.entityState
         targetEntityState = targetKeyframe.entityState
         diffEntityState = targetEntityState.clone()
-        diffEntityState.difference(originalEntityState, targetEntityState)
+        diffEntityState.difference(originalEntityState, targetEntityState, True)
         for animation in self.animationSet.animations:
             if animation.name == 'rest':
-                animation.keyframes[0].entityState.combineSelf(diffEntityState)
+                animation.keyframes[0].entityState.combineSelf(diffEntityState, True)
                 continue
             for keyframe in animation.keyframes:
-                keyframe.entityState.combineSelf(diffEntityState)
+                keyframe.entityState.combineSelf(diffEntityState, True)
 
         self.updateAnimationState()
         QtGui.QMessageBox.information(self, 'Retargeting complete', 'Retargeting is complete.')
+
+    

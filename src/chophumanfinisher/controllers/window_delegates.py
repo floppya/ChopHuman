@@ -3,7 +3,7 @@ ChopHumanDelegate subclasses define different modes of operation for the main wi
 and is the primary means of adding functionality to the program.
 For now, they must also be configured in the main window.
 """
-
+import os
 from PyQt4 import QtCore, QtGui
 
 
@@ -13,6 +13,7 @@ class ChopHumanDelegate(object):
     """
     delegateName = 'ChopHuman delegate'
     hotKey = 'a'
+    iconFilename = ''
 
     def __init__(self, window):
         self.window = window
@@ -33,6 +34,10 @@ class ChopHumanDelegate(object):
             action.triggered.connect(self._onEnableAction)
             if self.hotKey:
                 action.setShortcut(self.hotKey)
+            if self.iconFilename:
+                filename = os.path.join('./ui', self.iconFilename)
+                icon = QtGui.QIcon(filename)
+                action.setIcon(icon)
         return self.action
 
     def _onEnableAction(self):
@@ -58,6 +63,7 @@ class DefaultDelegate(ChopHumanDelegate):
     """
     This is the delegate which is used by default. Allows highlighting of Bones.
     """
+    iconFilename = 'viewmode.png'
     delegateName = 'View'
     hotKey = 'a'
 
@@ -76,6 +82,7 @@ class PlaceBonesDelegate(ChopHumanDelegate):
     """
     This mode is used to arrange the bones relative to the skins.
     """
+    iconFilename = 'movebones.png'
     delegateName = 'Place bones'
     hotKey = 's'
 
@@ -118,6 +125,7 @@ class TrimSkinsDelegate(ChopHumanDelegate):
     Holding the left mouse button masks out parts of the skin.
     Pressing the right button reveals area.
     """
+    iconFilename = 'cut.png'
     delegateName = 'Trim skins'
     isDragging = False
     isMasking = True

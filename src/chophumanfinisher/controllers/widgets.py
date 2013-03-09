@@ -301,3 +301,5 @@ class BoneGraphicsItem(QtGui.QGraphicsObject):
     def updateBone(self):
         """Update the bone from the item transform"""
         pass
+
+    

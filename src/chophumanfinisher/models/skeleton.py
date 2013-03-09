@@ -68,12 +68,12 @@ class Transform(object):
     def interpolate(self, transform0, transform1, t, shortest=False):
         self.x = _lerp(transform0.x, transform1.x, t)
         self.y = _lerp(transform0.y, transform1.y, t)
-        self.spin = transform0.spin
         if shortest:
             spin = 0
         else:
-            spin = self.spin
-        self.angle = _lerpAngle(transform0.angle, transform1.angle, t, spin)
+            spin = transform0.spin
+        self.spin = spin
+        self.angle = normalizeAngle(_lerpAngle(transform0.angle, transform1.angle, t, spin))
         self.scaleX = _lerp(transform0.scaleX, transform1.scaleX, t)
         self.scaleY = _lerp(transform0.scaleY, transform1.scaleY, t)
 
@@ -86,7 +86,7 @@ class Transform(object):
         newY = other.y + self.x * ps + self.y * pc
         self.x = newX
         self.y = newY
-        self.angle += other.angle
+        self.angle += normalizeAngle(other.angle)
         self.scaleX *= other.scaleX
         self.scaleY *= other.scaleY
         return self
@@ -103,7 +103,7 @@ class Transform(object):
     def add(self, t0, t1):
         self.x = t1.x + t0.x
         self.y = t1.y + t0.y
-        self.angle = t1.angle + t0.angle
+        self.angle = normalizeAngle(t1.angle + t0.angle)
         self.scaleX = t1.scaleX + t0.scaleX
         self.scaleY = t1.scaleY + t0.scaleY
         self.spin = 0 # TODO: what to do with spin?
@@ -111,7 +111,7 @@ class Transform(object):
     def subtract(self, t0, t1):
         self.x = t1.x - t0.x
         self.y = t1.y - t0.y
-        self.angle = t1.angle - t0.angle
+        self.angle = normalizeAngle(t1.angle - t0.angle)
         self.scaleX = t1.scaleX - t0.scaleX
         self.scaleY = t1.scaleY - t0.scaleY
         self.spin = 0 # TODO: what to do with spin?
