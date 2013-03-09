@@ -62,7 +62,7 @@
    </widget>
    <addaction name="menuFile"/>
   </widget>
-  <widget class="QToolBar" name="toolBar">
+  <widget class="QToolBar" name="toolToolbar">
    <property name="windowTitle">
     <string>toolBar</string>
    </property>
@@ -101,9 +101,22 @@
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout_3">
        <item>
-        <widget class="QCheckBox" name="chkFreezeSkins">
+        <widget class="QPushButton" name="butFreezeSkins">
          <property name="text">
           <string>Freeze skins</string>
+         </property>
+         <property name="icon">
+          <iconset resource="chophuman.qrc">
+           <normaloff>:/img/lock.png</normaloff>:/img/lock.png</iconset>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>32</width>
+           <height>32</height>
+          </size>
+         </property>
+         <property name="checkable">
+          <bool>true</bool>
          </property>
          <property name="checked">
           <bool>false</bool>
@@ -171,43 +184,61 @@
        </property>
        <item>
         <widget class="QToolButton" name="butNewAnimation">
+         <property name="toolTip">
+          <string>New animation</string>
+         </property>
          <property name="text">
           <string>New</string>
          </property>
          <property name="icon">
-          <iconset>
-           <normaloff>./ui/animationNew.png</normaloff>./ui/animationNew.png</iconset>
+          <iconset resource="chophuman.qrc">
+           <normaloff>:/img/animationNew.png</normaloff>:/img/animationNew.png</iconset>
          </property>
-         <property name="toolTip">
-          <string>New animation</string>
+         <property name="iconSize">
+          <size>
+           <width>32</width>
+           <height>32</height>
+          </size>
          </property>
         </widget>
        </item>
        <item>
         <widget class="QToolButton" name="butCloneAnimation">
-         <property name="text">
-          <string>Clone</string>
-         </property>
          <property name="toolTip">
           <string>Clone animation</string>
          </property>
+         <property name="text">
+          <string>Clone</string>
+         </property>
          <property name="icon">
-          <iconset>
-           <normaloff>./ui/animationClone.png</normaloff>./ui/animationClone.png</iconset>
+          <iconset resource="chophuman.qrc">
+           <normaloff>:/img/animationClone.png</normaloff>:/img/animationClone.png</iconset>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>32</width>
+           <height>32</height>
+          </size>
          </property>
         </widget>
        </item>
        <item>
         <widget class="QToolButton" name="butDeleteAnimation">
-         <property name="text">
-          <string>Delete</string>
-         </property>
          <property name="toolTip">
           <string>Delete animation</string>
          </property>
+         <property name="text">
+          <string>Delete</string>
+         </property>
          <property name="icon">
-          <iconset>
-           <normaloff>./ui/animationDelete.png</normaloff>./ui/animationDelete.png</iconset>
+          <iconset resource="chophuman.qrc">
+           <normaloff>:/img/animationDelete.png</normaloff>:/img/animationDelete.png</iconset>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>32</width>
+           <height>32</height>
+          </size>
          </property>
         </widget>
        </item>
@@ -298,35 +329,61 @@
            <verstretch>0</verstretch>
           </sizepolicy>
          </property>
+         <property name="toolTip">
+          <string>Go to start</string>
+         </property>
          <property name="text">
-          <string></string>
+          <string/>
          </property>
          <property name="icon">
-          <iconset>
-           <normaloff>./ui/gotostart.png</normaloff>./ui/gotostart.png</iconset>
+          <iconset resource="chophuman.qrc">
+           <normaloff>:/img/gotostart.png</normaloff>:/img/gotostart.png</iconset>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>32</width>
+           <height>32</height>
+          </size>
          </property>
         </widget>
        </item>
        <item>
         <widget class="QPushButton" name="butMoveToPrevKeyframe">
+         <property name="toolTip">
+          <string>Previous keyframe</string>
+         </property>
          <property name="text">
-          <string></string>
+          <string/>
          </property>
          <property name="icon">
-          <iconset>
-           <normaloff>./ui/prevkey.png</normaloff>./ui/prevkey.png</iconset>
+          <iconset resource="chophuman.qrc">
+           <normaloff>:/img/prevkey.png</normaloff>:/img/prevkey.png</iconset>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>32</width>
+           <height>32</height>
+          </size>
          </property>
         </widget>
        </item>
        <item>
         <widget class="QPushButton" name="butTogglePlay">
+         <property name="toolTip">
+          <string>Toggle play</string>
+         </property>
          <property name="text">
           <string/>
          </property>
          <property name="icon">
-          <iconset>
-           <normaloff>ui/play.png</normaloff>
-           <normalon>ui/pause.png</normalon>ui/play.png</iconset>
+          <iconset resource="chophuman.qrc">
+           <normaloff>:/img/play.png</normaloff>:/img/play.png</iconset>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>32</width>
+           <height>32</height>
+          </size>
          </property>
          <property name="checkable">
           <bool>true</bool>
@@ -335,23 +392,41 @@
        </item>
        <item>
         <widget class="QPushButton" name="butMoveToNextKeyframe">
+         <property name="toolTip">
+          <string>Next keyframe</string>
+         </property>
          <property name="text">
-          <string></string>
+          <string/>
          </property>
          <property name="icon">
-          <iconset>
-           <normaloff>./ui/nextkey.png</normaloff>./ui/nextkey.png</iconset>
+          <iconset resource="chophuman.qrc">
+           <normaloff>:/img/nextkey.png</normaloff>:/img/nextkey.png</iconset>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>32</width>
+           <height>32</height>
+          </size>
          </property>
         </widget>
        </item>
        <item>
         <widget class="QPushButton" name="butEndOfPlayback">
+         <property name="toolTip">
+          <string>Go to end</string>
+         </property>
          <property name="text">
-          <string></string>
+          <string/>
          </property>
          <property name="icon">
-          <iconset>
-           <normaloff>./ui/gotoend.png</normaloff>./ui/gotoend.png</iconset>
+          <iconset resource="chophuman.qrc">
+           <normaloff>:/img/gotoend.png</normaloff>:/img/gotoend.png</iconset>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>32</width>
+           <height>32</height>
+          </size>
          </property>
         </widget>
        </item>
@@ -436,23 +511,41 @@
            <verstretch>0</verstretch>
           </sizepolicy>
          </property>
+         <property name="toolTip">
+          <string>Add keyframe</string>
+         </property>
          <property name="text">
-          <string>Add key</string>
+          <string/>
          </property>
          <property name="icon">
-          <iconset>
-           <normaloff>./ui/keyAdd.png</normaloff>./ui/keyAdd.png</iconset>
+          <iconset resource="chophuman.qrc">
+           <normaloff>:/img/keyAdd.png</normaloff>:/img/keyAdd.png</iconset>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>32</width>
+           <height>32</height>
+          </size>
          </property>
         </widget>
        </item>
        <item>
         <widget class="QPushButton" name="butDeleteKeyframe">
+         <property name="toolTip">
+          <string>Delete keyframe</string>
+         </property>
          <property name="text">
-          <string>Delete key</string>
+          <string/>
          </property>
          <property name="icon">
-          <iconset>
-           <normaloff>./ui/keyDelete.png</normaloff>./ui/keyDelete.png</iconset>
+          <iconset resource="chophuman.qrc">
+           <normaloff>:/img/keyDelete.png</normaloff>:/img/keyDelete.png</iconset>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>32</width>
+           <height>32</height>
+          </size>
          </property>
         </widget>
        </item>
@@ -509,6 +602,8 @@
    </property>
   </action>
  </widget>
- <resources/>
+ <resources>
+  <include location="chophuman.qrc"/>
+ </resources>
  <connections/>
 </ui>

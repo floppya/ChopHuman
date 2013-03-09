@@ -88,9 +88,9 @@ class ChopHumanMainWindow(QtGui.QMainWindow, Ui_ChopHumanMainWindow):
         @self.chkHighlightSelected.stateChanged.connect
         def onToggleHighlightSelected(state):
             pass # TODO: change the current view to reflect the new state
-        @self.chkFreezeSkins.stateChanged.connect
+        @self.butFreezeSkins.clicked.connect
         def onToggleFreezeSkin(val):
-            if not self.chkFreezeSkins.isChecked():
+            if not self.butFreezeSkins.isChecked():
                 self.copySkinTransforms()
         @self.chkLooping.stateChanged.connect
         def onToggleLooping(val):
@@ -206,7 +206,7 @@ class ChopHumanMainWindow(QtGui.QMainWindow, Ui_ChopHumanMainWindow):
             self.delegates.append(delegate)
             action = delegate.getEnableAction()
             self.delegateActionGroup.addAction(action)
-        self.toolBar.addActions(self.delegateActionGroup.actions())
+        self.toolToolbar.addActions(self.delegateActionGroup.actions())
         self.delegate = self.delegates[0]
         self.delegateActionGroup.actions()[0].setChecked(True)
 
@@ -337,7 +337,6 @@ class ChopHumanMainWindow(QtGui.QMainWindow, Ui_ChopHumanMainWindow):
         self.currentAnimation = None
         self.entityState = None
         self.playbackTimer.stop()
-        
 
     def onReset(self):
         self.reset()
@@ -492,7 +491,7 @@ class ChopHumanMainWindow(QtGui.QMainWindow, Ui_ChopHumanMainWindow):
                 continue
             boneItem.setRotation(bone.transform.angle)
             boneItem.setPos(bone.transform.x, bone.transform.y)
-        if not self.chkFreezeSkins.isChecked():
+        if not self.butFreezeSkins.isChecked():
             for skin in entityState.skins:
                 bone = entityState.bones[skin.parent]
                 skinItem = self.skinItemMap.get(bone.name, None)

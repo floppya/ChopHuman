@@ -1,0 +1,19 @@
+<RCC>
+  <qresource prefix="img">
+    <file>lock.png</file>
+    <file>animationClone.png</file>
+    <file>animationDelete.png</file>
+    <file>animationNew.png</file>
+    <file>cut.png</file>
+    <file>gotoend.png</file>
+    <file>gotostart.png</file>
+    <file>keyAdd.png</file>
+    <file>keyDelete.png</file>
+    <file>movebones.png</file>
+    <file>nextkey.png</file>
+    <file>pause.png</file>
+    <file>play.png</file>
+    <file>prevkey.png</file>
+    <file>viewmode.png</file>
+  </qresource>
+</RCC>

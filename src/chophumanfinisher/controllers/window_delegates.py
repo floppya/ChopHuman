@@ -193,6 +193,7 @@ class TrimSkinsDelegate(ChopHumanDelegate):
 
 class PoseDelegate(ChopHumanDelegate):
     """
+    DEPRECIATED
     This delegate allows the user to pose the skeleton by
     dragging the bones around.
     """
