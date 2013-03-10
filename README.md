@@ -80,6 +80,10 @@ License
 -------
 Code: MIT
 
-Icons: Creative Commons (Attribution 3.0 Unported) 
+Majority of the icons: Creative Commons (Attribution 3.0 Unported) 
 Attribution: [Momenticons](http://momentumdesignlab.com)
 They have a couple of large CC licensed icon sets worth checking out.
+
+Bone icon: http://banzaitokyo.com CC Attribution 3.0
+
+If the icon looks crappy, it's because it is a composite I made.

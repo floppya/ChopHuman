@@ -66,11 +66,17 @@
    <property name="windowTitle">
     <string>toolBar</string>
    </property>
+   <property name="iconSize">
+    <size>
+     <width>32</width>
+     <height>32</height>
+    </size>
+   </property>
    <property name="toolButtonStyle">
     <enum>Qt::ToolButtonIconOnly</enum>
    </property>
    <attribute name="toolBarArea">
-    <enum>LeftToolBarArea</enum>
+    <enum>TopToolBarArea</enum>
    </attribute>
    <attribute name="toolBarBreak">
     <bool>false</bool>
@@ -101,27 +107,17 @@
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout_3">
        <item>
-        <widget class="QPushButton" name="butFreezeSkins">
-         <property name="text">
-          <string>Freeze skins</string>
+        <spacer name="horizontalSpacer_4">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
          </property>
-         <property name="icon">
-          <iconset resource="chophuman.qrc">
-           <normaloff>:/img/lock.png</normaloff>:/img/lock.png</iconset>
-         </property>
-         <property name="iconSize">
+         <property name="sizeHint" stdset="0">
           <size>
-           <width>32</width>
-           <height>32</height>
+           <width>40</width>
+           <height>20</height>
           </size>
          </property>
-         <property name="checkable">
-          <bool>true</bool>
-         </property>
-         <property name="checked">
-          <bool>false</bool>
-         </property>
-        </widget>
+        </spacer>
        </item>
        <item>
         <widget class="QCheckBox" name="chkHighlightSelected">
@@ -309,7 +305,7 @@
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout">
        <item>
-        <spacer name="horizontalSpacer">
+        <spacer name="horizontalSpacer_2">
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
          </property>
@@ -431,16 +427,9 @@
         </widget>
        </item>
        <item>
-        <widget class="QCheckBox" name="chkLooping">
-         <property name="text">
-          <string>Looping</string>
-         </property>
-        </widget>
-       </item>
-       <item>
         <widget class="QLabel" name="labelCurrentFrame">
          <property name="sizePolicy">
-          <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
            <horstretch>0</horstretch>
            <verstretch>0</verstretch>
           </sizepolicy>
@@ -504,6 +493,26 @@
         </widget>
        </item>
        <item>
+        <widget class="QPushButton" name="butLooping">
+         <property name="text">
+          <string>Loop</string>
+         </property>
+         <property name="icon">
+          <iconset resource="chophuman.qrc">
+           <normaloff>:/img/looping.png</normaloff>:/img/looping.png</iconset>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>32</width>
+           <height>32</height>
+          </size>
+         </property>
+         <property name="checkable">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="QPushButton" name="butAddKeyframe">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
@@ -550,7 +559,7 @@
         </widget>
        </item>
        <item>
-        <spacer name="horizontalSpacer_2">
+        <spacer name="horizontalSpacer">
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
          </property>
@@ -566,6 +575,25 @@
      </item>
     </layout>
    </widget>
+  </widget>
+  <widget class="QToolBar" name="toolBar">
+   <property name="windowTitle">
+    <string>toolBar</string>
+   </property>
+   <property name="iconSize">
+    <size>
+     <width>32</width>
+     <height>32</height>
+    </size>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="actionFreezeSkins"/>
+   <addaction name="actionFreezeBones"/>
   </widget>
   <action name="actionLoadImages">
    <property name="text">
@@ -599,6 +627,36 @@
    </property>
    <property name="shortcut">
     <string>V</string>
+   </property>
+  </action>
+  <action name="actionFreezeBones">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="chophuman.qrc">
+     <normaloff>:/img/freezeBones.png</normaloff>:/img/freezeBones.png</iconset>
+   </property>
+   <property name="text">
+    <string>Freeze bones</string>
+   </property>
+   <property name="toolTip">
+    <string>Freeze bones</string>
+   </property>
+  </action>
+  <action name="actionFreezeSkins">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="chophuman.qrc">
+     <normaloff>:/img/freezeSkins.png</normaloff>:/img/freezeSkins.png</iconset>
+   </property>
+   <property name="text">
+    <string>Freeze skins</string>
+   </property>
+   <property name="toolTip">
+    <string>Freeze skins</string>
    </property>
   </action>
  </widget>

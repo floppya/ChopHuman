@@ -1,5 +1,8 @@
 <RCC>
   <qresource prefix="img">
+    <file>freezeSkins.png</file>
+    <file>freezeBones.png</file>
+    <file>looping.png</file>
     <file>lock.png</file>
     <file>animationClone.png</file>
     <file>animationDelete.png</file>

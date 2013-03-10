@@ -88,15 +88,15 @@ class ChopHumanMainWindow(QtGui.QMainWindow, Ui_ChopHumanMainWindow):
         @self.chkHighlightSelected.stateChanged.connect
         def onToggleHighlightSelected(state):
             pass # TODO: change the current view to reflect the new state
-        @self.butFreezeSkins.clicked.connect
+        @self.actionFreezeSkins.triggered.connect
         def onToggleFreezeSkin(val):
-            if not self.butFreezeSkins.isChecked():
+            if not self.actionFreezeSkins.isChecked():
                 self.copySkinTransforms()
-        @self.chkLooping.stateChanged.connect
+        @self.butLooping.clicked.connect
         def onToggleLooping(val):
             if not self.currentAnimation:
                 return
-            self.currentAnimation.looping = bool(self.chkLooping.isChecked())
+            self.currentAnimation.looping = bool(self.butLooping.isChecked())
         @self.butNewAnimation.clicked.connect
         def onNewAnimation():
             if not self.animationSet:
@@ -452,7 +452,7 @@ class ChopHumanMainWindow(QtGui.QMainWindow, Ui_ChopHumanMainWindow):
         self.flatEntityState = self.entityState.clone()
         self.spinAnimationLength.setValue(animation.length)
         self.playbackSlider.setMaximum(animation.length - 1)
-        self.chkLooping.setChecked(animation.looping)
+        self.butLooping.setChecked(animation.looping)
         prevT = float(self.playbackSlider.value())
         if prevT != 0.0:
             self.playbackSlider.setValue(0.0);
@@ -491,7 +491,7 @@ class ChopHumanMainWindow(QtGui.QMainWindow, Ui_ChopHumanMainWindow):
                 continue
             boneItem.setRotation(bone.transform.angle)
             boneItem.setPos(bone.transform.x, bone.transform.y)
-        if not self.butFreezeSkins.isChecked():
+        if not self.actionFreezeSkins.isChecked():
             for skin in entityState.skins:
                 bone = entityState.bones[skin.parent]
                 skinItem = self.skinItemMap.get(bone.name, None)
